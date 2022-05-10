@@ -23,13 +23,15 @@
         input wire [1:0]  count_end_slice_idx,
         input wire [24:0] count_end,
 
+        output reg [24:0] count_total0,
+
         output reg slice_en0,
         output reg slice_en1,
         output reg slice_en2,
         output reg slice_en3
 	);
 
-  reg [24:0] count_total0;
+  reg [24:0] count_total0; // TDMA cycle time 
   reg [24:0] count_total1;
   reg [24:0] count_total2;
   reg [24:0] count_total3;
@@ -89,12 +91,7 @@
           counter1 <= 0;
           counter2 <= 0;
           counter3 <= 0;
-          //sample_counter0 <= 0;
 
-          //slice_en0_internal <= 0;
-          //slice_en0_internal0 <= 0;
-          //slice_en1_internal <= 0;
-          //slice_en1_internal0 <= 0;
           slice_en0 <= 0;
           slice_en1 <= 0;
           slice_en2 <= 0;
@@ -121,29 +118,13 @@
           counter2 <=  (counter2==count_total2) ? 0 : (counter2 + 1);
           counter3 <=  (counter3==count_total3) ? 0 : (counter3 + 1);
 
+          // For AP
           slice_en0 <= ( (counter0<=count_end0) && (counter0>=count_start0) );
+
+          // For AP and STAs
           slice_en1 <= ((tsf_runtime_val_internal<=count_end1) && (tsf_runtime_val_internal>=count_start1) );  
           slice_en2 <= ((tsf_runtime_val_internal<=count_end2) && (tsf_runtime_val_internal>=count_start2) );
           slice_en3 <= ((tsf_runtime_val_internal<=count_end3) && (tsf_runtime_val_internal>=count_start3) );
-          /////////////////////////////////////////////////////////////////////////////////////////////////////
-          /////////////////////// generate slice enable signal ////////////////////////////////////////////////
-          // Counter zero is used on AP -- count the sample enable signal
-          //tsf_pulse_sb_internal  <= tsf_pulse_sb;
-
-          //// Enable 0 signal is generated from the raising edge
-          //sample_counter0     <= (tsf_pulse_sb == 1) && (tsf_pulse_sb_internal == 0) ? (sample_counter0==count_total0? 0 : (sample_counter0 + 1)): sample_counter0 ;
-          //slice_en0_internal  <= ((sample_counter0 <= count_end0) && (sample_counter0 >= count_start0));
-          //slice_en0_internal0 <= slice_en0_internal;
-
-          ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-          //slice_en1_internal  <= ((tsf_runtime_val_internal<=count_end1) && (tsf_runtime_val_internal>=count_start1) ); // PTP compensation
-          //slice_en1_internal0 <= slice_en1_internal;
-
-          // Others relies on the run time tsf
-          //slice_en0 <= ((tsf_runtime_val_internal<=count_end0) && (tsf_runtime_val_internal>=count_start0) );
-          //slice_en1 <= ((tsf_runtime_val_internal<=count_end1) && (tsf_runtime_val_internal>=count_start1) );  
-          //slice_en2 <= ((tsf_runtime_val_internal<=count_end2) && (tsf_runtime_val_internal>=count_start2) );
-          //slice_en3 <= ((tsf_runtime_val_internal<=count_end3) && (tsf_runtime_val_internal>=count_start3) );
     end
   end
 
